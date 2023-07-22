@@ -11,6 +11,7 @@ error Raffle__NotEnoughBalance();
 error Raffle__RaffleNotOpen();
 error Raffle__TransferFailed();
 error Raffle__WithDrawFailed();
+error Raffle__NotEnoughApproval();
 
 /**@title A Raffle Contract
  * @author 0xDemuth (Rohit Sharma)
@@ -154,6 +155,10 @@ contract RaffleContract is Ownable, VRFConsumerBaseV2 {
                 revert Raffle__NotEnoughBalance();
             }
         } else {
+            // Check if the sender has approved enough balance to enter the raffle
+            if (i_erc20Contract.allowance(sender, address(this)) < raffle.entryFee) {
+                revert Raffle__NotEnoughApproval();
+            }
             // Check if the sender has enough balance to enter the raffle
             if (i_erc20Contract.balanceOf(sender) < raffle.entryFee) {
                 revert Raffle__NotEnoughBalance();
